@@ -1,0 +1,27 @@
+{
+ "preset": "downpour",
+ "impacts_per_m2_s": 177.93931033786652,
+ "tile_cm": 121.09959602355957,
+ "cell_cm": 12.109959602355957,
+ "cells": 10,
+ "frames": 32,
+ "columns": 8,
+ "rows": 4,
+ "frame_px": 256,
+ "loop_seconds": 2.605863248846951,
+ "slope_range": 0.5,
+ "layers": 2,
+ "baked_speed": 3.069999933242798,
+ "peak_abs_slope": 0.482410728931427,
+ "clipped": false,
+ "params": {
+  "SpacingCm": 18.0,
+  "RadiusCm": 7.0,
+  "Rate": 1.5,
+  "Density": 0.85,
+  "ArtistSize": 0.873118,
+  "ArtistDensity": 0.552331,
+  "ArtistSpeed": 0.767253,
+  "ArtistRandomness": 0.85
+ }
+}
