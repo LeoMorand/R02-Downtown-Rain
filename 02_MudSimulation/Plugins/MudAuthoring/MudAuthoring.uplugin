@@ -1,0 +1,7 @@
+{
+  "FileVersion":3,"Version":1,"VersionName":"0.1","FriendlyName":"Mud Reconstruction Authoring",
+  "Description":"Editor authoring helpers for reproducible Niagara graphs; no FluidNinja dependency.",
+  "Category":"Rendering Research","EnabledByDefault":true,"CanContainContent":false,
+  "Modules":[{"Name":"MudAuthoring","Type":"Editor","LoadingPhase":"PostEngineInit"}],
+  "Plugins":[{"Name":"Niagara","Enabled":true}]
+}

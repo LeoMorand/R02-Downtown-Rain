@@ -1,0 +1,1 @@
+{"FileVersion":3,"Version":1,"VersionName":"0.1","FriendlyName":"Stormfall Hiss","CanContainContent":true,"Modules":[{"Name":"StormfallHissShaders","Type":"Runtime","LoadingPhase":"PostConfigInit"},{"Name":"StormfallHiss","Type":"Runtime","LoadingPhase":"Default"}]}

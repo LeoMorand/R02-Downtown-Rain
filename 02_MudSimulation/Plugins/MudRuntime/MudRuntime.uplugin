@@ -1,0 +1,8 @@
+{
+  "FileVersion":3,"Version":1,"VersionName":"0.1",
+  "FriendlyName":"Independent Mud Runtime",
+  "Description":"Inspectable runtime controller for the independently authored MudStudy solver.",
+  "Category":"Rendering","EnabledByDefault":true,"CanContainContent":false,
+  "Modules":[{"Name":"MudRuntime","Type":"Runtime","LoadingPhase":"Default"}],
+  "Plugins":[{"Name":"Niagara","Enabled":true}]
+}

@@ -1,0 +1,54 @@
+// Reference for the captured MI_Mud1_WorldSpace + MID variant, front faces.
+// NOT a complete material, Niagara solver, or compiled/integrated UE shader.
+// Texture sampling, POM, coordinate transforms and height-normal functions
+// must produce these inputs first. Keep their original space/channel contracts.
+// Algebra checked against captured-node interpretation in 1000 CPU cases.
+#ifndef MUD_STUDY_SURFACE_MIX_REFERENCE
+#define MUD_STUDY_SURFACE_MIX_REFERENCE
+
+struct FMudStudySurfaceInputs
+{
+    float DensityB;             // VelocityDensityBuffer B, at original POM UV.
+    float Tile1R;               // Original TileMap1 coordinate/sample path.
+    float Tile2R;               // Original TileMap2 coordinate/sample path.
+    float3 FlowSampleRGB;       // MF_FlowMapFunction result, before density shaping.
+    float3 SimNormal;           // Original density-normal function result, RGB.
+    float3 TileNormal1;         // Original tile-normal function result.
+    float3 TileNormal2;
+    float CameraDistanceCm;     // distance(AbsoluteWorldPosition, CameraPositionWS).
+    float3 Color1;
+    float3 Color2;
+};
+
+struct FMudStudySurfaceOutputs
+{
+    float3 MaterialNormalInput; // Do not silently normalize/change its space here.
+    float3 BaseColor;
+    float Roughness;
+    float Specular;
+    float CombinedDensity;     // Intermediate inspection values, not extra RTs.
+    float TileDistanceWeight;
+    float3 FlowShaped;
+};
+
+FMudStudySurfaceOutputs MudStudyMixFrontFace(FMudStudySurfaceInputs I)
+{
+    FMudStudySurfaceOutputs O;
+    O.TileDistanceWeight = saturate(2.0 * (I.CameraDistanceCm - 1500.0) / 500.0);
+    float Tile = I.Tile1R - 0.1 * I.Tile2R;
+    O.CombinedDensity = min(I.DensityB * (1.0 + Tile * O.TileDistanceWeight), 1.0);
+    O.FlowShaped = 0.5 * pow(1.0 - I.FlowSampleRGB, 2.0)
+                      * pow(O.CombinedDensity, 0.1);
+    float ColorWeight = O.FlowShaped.r + 0.25 * pow(O.CombinedDensity, 10.0);
+    O.BaseColor = lerp(I.Color2, I.Color1, ColorWeight);
+    O.MaterialNormalInput = I.SimNormal
+        + O.TileDistanceWeight * pow(I.DensityB, 2.0)
+          * (I.TileNormal1 - 0.1 * I.TileNormal2);
+    O.Roughness = min(max(0.1 * I.DensityB,
+        0.1 + 0.1 * (1.0 - Tile * O.TileDistanceWeight)
+            + min(2.0 * O.FlowShaped.r, 1.0)), 1.0);
+    O.Specular = 0.2;
+    return O;
+}
+
+#endif

@@ -1,0 +1,2 @@
+using UnrealBuildTool; using System.IO;
+public class StormfallHissShaders : ModuleRules { public StormfallHissShaders(ReadOnlyTargetRules Target) : base(Target) { PCHUsage=PCHUsageMode.UseExplicitOrSharedPCHs;  PrivateDependencyModuleNames.AddRange(new[]{"Core","CoreUObject","Engine","Projects","RenderCore","Renderer","RHI"}); } }

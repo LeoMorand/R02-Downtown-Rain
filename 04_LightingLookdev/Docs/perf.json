@@ -1,0 +1,23 @@
+{
+  "status": "not_measured",
+  "resolution": [
+    1920,
+    1080
+  ],
+  "time_fixed": 3,
+  "cameras": {
+    "LP_Hero_01": {
+      "hiss_ms": null,
+      "frame_gpu_ms": null,
+      "samples": []
+    },
+    "LP_Hero_06": {
+      "hiss_ms": null,
+      "frame_gpu_ms": null,
+      "samples": []
+    }
+  },
+  "reason": "ProfileGPU captured Slate or empty frames without a matching Hiss event; 45-minute limit.",
+  "host_simple_scene_hiss_ms": 0.382,
+  "host_simple_scene_scope": "HissHost simple test scene; not Stormfall camera measurement."
+}

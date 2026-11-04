@@ -1,0 +1,15 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "0.1",
+  "FriendlyName": "Mud Shader Lab",
+  "Description": "Global compute shader and RDG experiments for the mud study.",
+  "Category": "Rendering",
+  "EnabledByDefault": true,
+  "CanContainContent": false,
+  "Modules": [
+    { "Name": "MudShaderLab", "Type": "Runtime", "LoadingPhase": "PostConfigInit" },
+    { "Name": "MudShaderIntegration", "Type": "Runtime", "LoadingPhase": "Default" }
+  ],
+  "Plugins": [{ "Name": "MudRuntime", "Enabled": true }]
+}

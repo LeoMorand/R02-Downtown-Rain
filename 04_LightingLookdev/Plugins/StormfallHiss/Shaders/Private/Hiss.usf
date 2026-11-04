@@ -1,0 +1,47 @@
+#include "/Engine/Private/Common.ush"
+Texture2D SceneColor;
+Texture2D SceneDepth;
+SamplerState SceneSampler;
+float4 InputRect;
+float2 InputExtentInverse;
+float4 OutputRect;
+
+float2 DepthExtentInverse;
+float4 DepthTransform;
+float4 EdgeColor;
+float4 ErosionColor;
+float4 Controls; // intensity, edge threshold, chromatic pixels, time
+float4 Erosion; // near cm, far cm, scanline density, debug red
+float LinearDepth(float2 uv) {
+ float z=SceneDepth.SampleLevel(SceneSampler,uv,0).r;
+ return min(1000000.0,max(0.0,z*DepthTransform.x+DepthTransform.y+rcp(z*DepthTransform.z-DepthTransform.w)));
+}
+void MainPS(noperspective float4 UVAndScreenPos:TEXCOORD0,float4 Position:SV_POSITION,out float4 OutColor:SV_Target0) {
+ float2 local=(Position.xy-OutputRect.xy)/OutputRect.zw;
+ float2 lo=(InputRect.xy+0.5)*InputExtentInverse;
+ float2 hi=(InputRect.xy+InputRect.zw-0.5)*InputExtentInverse;
+ float2 uv=clamp(UVAndScreenPos.xy,lo,hi);
+ float4 original=SceneColor.SampleLevel(SceneSampler,uv,0);
+ if(Erosion.w>0.5) { OutColor=float4(lerp(original.rgb,original.rgb*float3(1,0.3,0.3),Controls.x),original.a); return; }
+ float4 DepthRect=float4(View.ViewRectMin.xy,View.ViewSizeAndInvSize.xy);
+ float2 depthUV=(DepthRect.xy+local*DepthRect.zw)*DepthExtentInverse;
+ float2 depthLo=(DepthRect.xy+0.5)*DepthExtentInverse;
+ float2 depthHi=(DepthRect.xy+DepthRect.zw-0.5)*DepthExtentInverse;
+ float d=LinearDepth(clamp(depthUV,depthLo,depthHi));
+ // Four neighbours. Radius shrinks with view depth; no random/noise texture.
+ float radius=clamp(1200.0/max(d,1.0),0.65,2.0);
+ float2 dx=float2(radius,0)*DepthExtentInverse;
+ float2 dy=float2(0,radius)*DepthExtentInverse;
+ float gradient=max(max(abs(LinearDepth(clamp(depthUV+dx,depthLo,depthHi))-d),abs(LinearDepth(clamp(depthUV-dx,depthLo,depthHi))-d)),max(abs(LinearDepth(clamp(depthUV+dy,depthLo,depthHi))-d),abs(LinearDepth(clamp(depthUV-dy,depthLo,depthHi))-d)))/max(d,1.0);
+ float edge=smoothstep(Controls.y,Controls.y*2.0,gradient)*saturate(3000.0/max(d,1.0));
+ float2 radial=local-0.5;
+ float2 offset=radial*dot(radial,radial)*Controls.z*4.0*InputExtentInverse;
+ float3 color=original.rgb;
+ color.r=SceneColor.SampleLevel(SceneSampler,clamp(uv+offset,lo,hi),0).r;
+ color.b=SceneColor.SampleLevel(SceneSampler,clamp(uv-offset,lo,hi),0).b;
+ float scan=0.65+0.35*sin((local.y*Erosion.z-Controls.w*0.18)*6.2831853);
+ float invasion=smoothstep(Erosion.x,Erosion.y,d)*scan*0.42;
+ color=lerp(color,ErosionColor.rgb,invasion);
+ color=lerp(color,EdgeColor.rgb,edge*0.85);
+ OutColor=float4(lerp(original.rgb,color,Controls.x),original.a);
+}
